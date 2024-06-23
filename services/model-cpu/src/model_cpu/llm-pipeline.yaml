@@ -1,0 +1,16 @@
+---
+pipeline:
+  pipeline-type: "text-generation"
+  kwargs:
+    max_new_tokens: 100
+  model:
+    model-name: "openai-community/gpt2"
+    kwargs:
+      do_sample: true
+      temperature: 0.1,
+  tokenizer:
+    model-name: "openai-community/gpt2"
+    kwargs:
+      padding: true
+      truncation: true
+...
