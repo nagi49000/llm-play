@@ -1,5 +1,8 @@
 FROM registry.fedoraproject.org/f35/python3
 
+ARG githash=unset
+ARG build_time=unset
+
 COPY --chown=default:root requirements.txt requirements.txt
 
 RUN pip install --upgrade pip && \
@@ -9,9 +12,6 @@ COPY --chown=default:root src src
 COPY --chown=default:root test_model_cpu test_model_cpu
 
 RUN python -m pytest --cov=./src/ --cov-report term-missing
-
-ARG githash=unset
-ARG build_time=unset
 
 ENV BUILD_TIME=${build_time}
 ENV GITHASH=${githash}
