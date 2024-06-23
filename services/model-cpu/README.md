@@ -9,4 +9,6 @@ docker run --rm -p 26780:6780 model-cpu
 ```
 and swagger docs should be available at `http://localhost:26780/docs`
 
-The LLM is baked into the docker image. The params for the LLM that is downloaded and baked in are specified in [this yaml file](src/model_cpu/llm-pipeline.yaml)
+The LLM is baked into the docker image. The params for the LLM that is downloaded and baked in are specified in [this yaml file](src/model_cpu/llm-pipeline.yaml).
+
+After build, the image should be self-contained (i.e. will not need to download further LLM files or packages) and only need CPU for inference.
