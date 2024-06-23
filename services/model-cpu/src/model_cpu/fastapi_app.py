@@ -1,10 +1,13 @@
 from transformers import AutoTokenizer, pipeline
-from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
+from langchain_huggingface import HuggingFacePipeline
 from fastapi import FastAPI
 from datetime import datetime
 import logging
 import os
+import yaml
+from pathlib import Path
 from pydantic import BaseModel
+from typing import Optional
 
 
 class HealthcheckResponse(BaseModel):
@@ -15,6 +18,10 @@ class VersionResponse(BaseModel):
     app_name: str
     githash: str
     build_time: datetime
+
+
+class PipelineSpecResponse(BaseModel):
+    pipeline: dict
 
 
 class InvokeResponse(BaseModel):
@@ -34,34 +41,34 @@ def get_gunicorn_logger(name: str = "gunicorn.error"):
     return logger
 
 
-def get_text_generator_llm(
-    model_name: str,
-    model_kwargs: dict,
-    tokenizer_name: str,
-    tokenizer_kwargs: dict,
-    max_new_tokens: int
-) -> HuggingFacePipeline:
-    text_generator = pipeline(
-        "text-generation",
-        model=model_name,
+def get_llm_pipeline_from_yaml(filename: Optional[str] = None) -> HuggingFacePipeline:
+    if filename is None:
+        filename = Path(__file__).parent / "llm-pipeline.yaml"
+    with open(filename) as f:
+        pipeline_spec = yaml.safe_load(f)
+    p = pipeline_spec["pipeline"]
+    llm_pipeline = pipeline(
+        p["pipeline-type"],
+        model=p["model"]["model-name"],
         tokenizer=AutoTokenizer.from_pretrained(
-            tokenizer_name,
-            **tokenizer_kwargs
+            p["tokenizer"]["model-name"],
+            **p["tokenizer"]["kwargs"]
         ),
         device_map="cpu",  # suppresses GPU use
-        model_kwargs=model_kwargs,
-        max_new_tokens=max_new_tokens,
+        model_kwargs=p["model"]["kwargs"],
+        **p["kwargs"]
     )
 
     llm = HuggingFacePipeline(
-        pipeline=text_generator,
+        pipeline=llm_pipeline,
     )
 
     return llm
 
 
-def create_app(llm: HuggingFacePipeline, logger_name: str = "gunicorn.error"):
+def create_app(logger_name: str = "gunicorn.error", pipeline_yaml_filename: Optional[str] = None):
     logger = get_gunicorn_logger(name=logger_name)
+    llm = get_llm_pipeline_from_yaml(pipeline_yaml_filename)
     app_name = os.getenv("APP_NAME", "self contained CPU model")
     root_path = os.getenv("ROOT_PATH", None)
     app = FastAPI(title=app_name, root_path=root_path)
@@ -78,6 +85,13 @@ def create_app(llm: HuggingFacePipeline, logger_name: str = "gunicorn.error"):
             "githash": os.getenv("GITHASH"),
             "build_time": os.getenv("BUILD_TIME")
         }
+
+    @app.get("/pipeline-spec", response_model=PipelineSpecResponse)
+    async def pipeline_spec():
+        spec_filename = Path(__file__).parent / "llm-pipeline.yaml"
+        with open(spec_filename) as f:
+            pipeline_spec = yaml.safe_load(f)
+        return pipeline_spec
 
     @app.post("/invoke", response_model=InvokeResponse)
     async def invoke(p: InvokeRequest):
