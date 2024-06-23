@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, pipeline
 from langchain_huggingface import HuggingFacePipeline
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from datetime import datetime
 import logging
 import os
@@ -70,8 +71,12 @@ def create_app(logger_name: str = "gunicorn.error", pipeline_yaml_filename: Opti
     logger = get_gunicorn_logger(name=logger_name)
     llm = get_llm_pipeline_from_yaml(pipeline_yaml_filename)
     app_name = os.getenv("APP_NAME", "self contained CPU model")
+    # allow a root path to be specified in case the app is behind a reverse proxy or endpoint - needed for anything UI based
     root_path = os.getenv("ROOT_PATH", None)
     app = FastAPI(title=app_name, root_path=root_path)
+    # specify static files for docs_url and redoc_url so that the UI docs will work offline
+    static_files_dir = Path(__file__).parents[2] / "static"
+    app.mount("/static", StaticFiles(directory=str(static_files_dir)), name="static")
 
     @app.get("/healthcheck", response_model=HealthcheckResponse)
     async def healthcheck():

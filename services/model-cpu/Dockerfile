@@ -1,7 +1,13 @@
+# use a Red Hat UBI image ready for kube deploy
 FROM registry.fedoraproject.org/f35/python3
 
 ARG githash=unset
 ARG build_time=unset
+# these URLs are used by fastapi to download rendering files for swagger and redoc docs
+# they are working for fastapi==0.111.0, and may nned to be updated for other versions of fastapi
+ARG swagger_css_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js
+ARG swagger_favicon_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css
+ARG redoc_js_url=https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js
 
 LABEL githash=${githash}
 LABEL build-time=${build_time}
@@ -14,7 +20,12 @@ RUN pip install --upgrade pip && \
     # all the CUDA libs as described on https://pytorch.org/get-started/locally/
     pip install -r requirements_torch_only.txt --index-url https://download.pytorch.org/whl/cpu && \
     # rest of the requirements from normal pypi
-    pip install -r requirements.txt
+    pip install -r requirements.txt && \
+    # download static assets for offline usage of fastapi docs UI
+    mkdir static && \
+    curl --output static/swagger-ui-bundle.css ${swagger_css_url} && \
+    curl --output static/swagger-ui.css ${swagger_favicon_url} && \
+    curl --output static/redoc.standalone.js ${redoc_js_url}
 
 COPY --chown=default:root src src
 COPY --chown=default:root test_model_cpu test_model_cpu
