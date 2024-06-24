@@ -4,7 +4,7 @@ FROM registry.fedoraproject.org/f35/python3
 ARG githash=unset
 ARG build_time=unset
 # these URLs are used by fastapi to download rendering files for swagger and redoc docs
-# they are working for fastapi==0.111.0, and may nned to be updated for other versions of fastapi
+# they are working for fastapi==0.111.0, and may need to be updated for other versions of fastapi
 ARG swagger_css_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js
 ARG swagger_favicon_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css
 ARG redoc_js_url=https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js
