@@ -38,4 +38,4 @@ ENV BUILD_TIME=${build_time}
 ENV GITHASH=${githash}
 ENV LOG_LEVEL=DEBUG
 
-CMD gunicorn -k uvicorn.workers.UvicornWorker src.model_cpu.app:app --bind 0.0.0.0:6780 --log-level ${LOG_LEVEL}
+CMD gunicorn --worker-class uvicorn.workers.UvicornWorker --workers=1 --bind 0.0.0.0:6780 --log-level ${LOG_LEVEL} src.model_cpu.app:app
