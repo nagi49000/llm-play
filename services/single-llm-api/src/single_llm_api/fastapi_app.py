@@ -55,7 +55,7 @@ def get_llm_pipeline_from_yaml(filename: Optional[str] = None) -> HuggingFacePip
             p["tokenizer"]["model-name"],
             **p["tokenizer"]["kwargs"]
         ),
-        device_map="cpu",  # suppresses GPU use
+        device_map="auto",  # cat set this to "cpu" or an integer (usually 0) referring to GPU device no
         model_kwargs=p["model"]["kwargs"],
         **p["kwargs"]
     )

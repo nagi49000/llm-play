@@ -8,6 +8,7 @@ ARG build_time=unset
 ARG swagger_css_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js
 ARG swagger_favicon_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css
 ARG redoc_js_url=https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js
+ARG pip_cuda_index_url=https://download.pytorch.org/whl/cpu
 
 LABEL githash=${githash}
 LABEL build-time=${build_time}
@@ -16,9 +17,11 @@ COPY --chown=default:root requirements.txt requirements.txt
 COPY --chown=default:root requirements_torch_only.txt requirements_torch_only.txt
 
 RUN pip install --upgrade pip && \
-    # seperate pip install repo for torch for CPU only support without
+    # seperate pip install repo for torch for CPU only support or the specific
+    # GPU CUDA repo that marries up the with major CUDA version used on the deployment host
+    # change index url to match CUDA version available on your host/deployment environment
     # all the CUDA libs as described on https://pytorch.org/get-started/locally/
-    pip install -r requirements_torch_only.txt --index-url https://download.pytorch.org/whl/cpu && \
+    pip install -r requirements_torch_only.txt --index-url ${pip_cuda_index_url} && \
     # rest of the requirements from normal pypi
     pip install -r requirements.txt && \
     # download static assets for offline usage of fastapi docs UI
