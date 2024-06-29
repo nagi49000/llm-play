@@ -8,11 +8,12 @@ docker build --build-arg pip_cuda_index_url=https://download.pytorch.org/whl/cpu
 docker run --rm -p 26780:6780 model-cpu
 ```
 
-For GPU support, build and run with (pip_cuda_index_url should point to a repo corresponding to the major CUDA version for prod deployment - work out the index-url from [here](https://pytorch.org/get-started/locally/)
+For GPU support, build and run with
 ```bash
 docker build --build-arg pip_cuda_index_url=https://download.pytorch.org/whl/cu118 --build-arg githash=$(git rev-parse HEAD) --build-arg build_time=$(date --utc --iso-8601='seconds') . -t model-gpu
-docker run --gpus all --rm -p 26780:6780 model-gpu  # using GPUs via docker will require the [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+docker run --gpus all --rm -p 26780:6780 model-gpu
 ```
+note that the pip_cuda_index_url should point to a repo corresponding to the major CUDA version for prod deployment - work out the index-url from [here](https://pytorch.org/get-started/locally/ ). Using GPUs with docker (build and run) will require the [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
 Swagger docs should be available at `http://localhost:26780/docs`
 
