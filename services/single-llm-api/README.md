@@ -1,10 +1,12 @@
-# Service model-cpu
+# Service single_llm_api
 
 Build a containerized FastAPI app wrapping a LLM.
 
+### CPU only
+
 Build and run with
 ```
-docker build --build-arg githash=$(git rev-parse HEAD) --build-arg build_time=$(date --utc --iso-8601='seconds') . -t model-cpu
+docker build --file Dockerfile.cpu --build-arg githash=$(git rev-parse HEAD) --build-arg build_time=$(date --utc --iso-8601='seconds') . -t model-cpu
 docker run --rm -p 26780:6780 model-cpu
 ```
 and swagger docs should be available at `http://localhost:26780/docs`

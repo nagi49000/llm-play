@@ -28,7 +28,7 @@ RUN pip install --upgrade pip && \
     curl --output static/redoc.standalone.js ${redoc_js_url}
 
 COPY --chown=default:root src src
-COPY --chown=default:root test_model_cpu test_model_cpu
+COPY --chown=default:root test_single_llm_api test_single_llm_api
 
 # Rather than run in a different build stage, run tests directly in this docker-build stage
 # so that the LLM is downloaded and baked into the image
@@ -38,4 +38,4 @@ ENV BUILD_TIME=${build_time}
 ENV GITHASH=${githash}
 ENV LOG_LEVEL=DEBUG
 
-CMD gunicorn --worker-class uvicorn.workers.UvicornWorker --workers=1 --bind 0.0.0.0:6780 --log-level ${LOG_LEVEL} src.model_cpu.app:app
+CMD gunicorn --worker-class uvicorn.workers.UvicornWorker --workers=1 --bind 0.0.0.0:6780 --log-level ${LOG_LEVEL} src.single_llm_api.app:app

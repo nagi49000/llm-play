@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def test_yaml_reads_ok():
-    filename = Path(__file__).parents[1] / "src" / "model_cpu" / "llm-pipeline.yaml"
+    filename = Path(__file__).parents[1] / "src" / "single_llm_api" / "llm-pipeline.yaml"
     with open(filename) as f:
         pipeline_spec = yaml.safe_load(f)
     # sanity check some keys in the yaml

@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from model_cpu.fastapi_app import create_app, get_llm_pipeline_from_yaml
+from single_llm_api.fastapi_app import create_app, get_llm_pipeline_from_yaml
 
 
 @pytest.fixture
