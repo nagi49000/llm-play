@@ -20,3 +20,5 @@ The LLM is baked into the docker image. The params for the LLM that is downloade
 After build, the image should be self-contained (i.e. will not _need_, although may try, to download further LLM files or packages) and only need GPU or only CPU for inference (as defined in the build). When starting the image in a container without the internet, the app may take a couple of minutes to start up whilst the calls to https://huggingface.co for more up to date json configs on models, tokenizers etc times out.
 
 Once the app is up, swagger docs should be available at `http://localhost:26780/docs`.
+
+For without-internet testing, there is a [docker compose yml](docker-compose.yaml) to mimic no internet access by putting the container on an internal network.

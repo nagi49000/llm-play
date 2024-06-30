@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  llm-service:
+    build: './'
+    networks:
+      - backend
+    ports:
+      - 26780:6780
+
+networks:
+  backend:
+    internal: true
