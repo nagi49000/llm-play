@@ -8,7 +8,9 @@ ARG build_time=unset
 ARG swagger_css_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js
 ARG swagger_favicon_url=https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css
 ARG redoc_js_url=https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js
+# default args for CPU only
 ARG pip_cuda_index_url=https://download.pytorch.org/whl/cpu
+ARG app_name="self contained CPU model"
 
 LABEL githash=${githash}
 LABEL build-time=${build_time}
@@ -39,6 +41,7 @@ RUN python -m pytest -s -v --cov=./src/ --cov-report term-missing
 
 ENV BUILD_TIME=${build_time}
 ENV GITHASH=${githash}
+ENV APP_NAME=${app_name}
 ENV LOG_LEVEL=DEBUG
 
 CMD gunicorn --worker-class uvicorn.workers.UvicornWorker --workers=1 --bind 0.0.0.0:6780 --log-level ${LOG_LEVEL} src.single_llm_api.app:app
